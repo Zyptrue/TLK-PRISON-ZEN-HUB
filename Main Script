@@ -1,10 +1,10 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "ZENHUB | TLK PRISON V1.9",
+   Name = "ZENHUB | TLK PRISON [V2.3]",
    LoadingTitle = "Loading......",
-   LoadingSubtitle = "by Exterminate",
-   ShowText = "Rayfield UI", -- for mobile users to unhide Rayfield, change if you'd like
+   LoadingSubtitle = "by Zeutronxsite",
+   ShowText = "RAYFIELD", -- for mobile users to unhide Rayfield, change if you'd like
    Theme = "AmberGlow",
 
 -- Toggle HIde UI in PC
@@ -22,7 +22,7 @@ local Window = Rayfield:CreateWindow({
 
 -- Notification Rayfield
 Rayfield:Notify({
-   Title = "⚠️ Notification Alert",
+   Title = "⚠️ NOTIFICATION ALERT",
    Content = "- Thank you for using this script\n- This script is still in beta stage so there are many bugs",
    Duration = 5,
    Image = 4483362458,
@@ -42,18 +42,32 @@ local MainTab = Window:CreateTab("🏡 Main", nil)
 local Buff = Window:CreateTab("🔄️ Buffer", nil)
 local Bypass = Window:CreateTab("🛡️ Anti Cheat Bypass", nil)
 local Team = Window:CreateTab("🚹 Team & Esp", nil)
+local Other = Window:CreateTab("🔧 Other Scripts", nil)
+local Misc = Window:CreateTab("🔥 Misc", nil)
 
+-- ==========================================
+-- UI TABS & SECTIONS
+-- ==========================================
+local MainSection = Change:CreateSection("Information & Version")
+local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 1.2", Content = "- [+] Add No Cooldown Tool\n- [+] Anti Cheat Remover"})
 
--- Services & Variables
+local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 1.4", Content = "- [+] Add Buffer: HookMetaMethod, Spoofing + Hook, Randomization\n- [+] Anti Fling & Anti Walkspeed/Tp"})
+
+local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 1.6", Content = "- [+] Fixed Bug Velocity\n- [+] Add Velocity Method\n- [+] Add Auto Bypass Anti Cheat & Infinite Yield"})
+
+local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 1.9", Content = "- [+] Fixed Cframe Bug\n- [+] Add 🚹 Team & Esp\n- [+] Add Choose Team\n- [+] Add Esp Toggle\n- [!!] Delete Spoofing + Hook"})
+
+local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 2.3 (Latest Update)", Content = "- [+] Fixed WalkSpeed Bug\n- [+] Add 🔧 Other Scripts\n- [+] Add Script Tools\n- [!!] Fixed Auto Attack & Auto Heal\n- [+] Add Esp Other\n- [+] More Details & Information\n- [+] Change Toggle >> Button\n- [+] Add 🔥 Misc"})
+
+local MainSection = MainTab:CreateSection("Main Script Toggle")
+local Paragraph = MainTab:CreateParagraph({Title = "📢 INFORMATION", Content = "Auto Attack & Auto Heal Not tested yet, therefore there may be bugs"})
+
+-- ==========================================
+-- LOCAL SCRIPTS & SERVICE
+-- ==========================================
+
 local Plr = game:GetService("Players").LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local Places = {
-    ["Outside"] = CFrame.new(237, 3, -106),
-    ["Prison"] = CFrame.new(77, 3, -104),
-    ["Basement"] = CFrame.new(468, -6, -89),
-    ["Burger"] = CFrame.new(235, 3, -598)
-}
 
 local WeaponsName = {
     "Axe", "Pickaxe", "Fist", "Bat", "Knife", "Hammer", 
@@ -171,56 +185,119 @@ local function getPlayer(String, Information)
 end
 
 -- ==========================================
--- UI TABS & SECTIONS
+-- PERBAIKAN AUTO ATTACK (CONTINUOUS LOOP)
 -- ==========================================
-local MainSection = Change:CreateSection("Information & Version")
-local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 1.2", Content = "- [+] Add No Cooldown Tool\n- [+] Anti Cheat Remover"})
+local IsAutoAttacking = false
 
-local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 1.4", Content = "- [+] Add Buffer: HookMetaMethod, Spoofing + Hook, Randomization\n- [+] Anti Fling & Anti Walkspeed/Tp"})
-
-local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 1.6", Content = "- [+] Fixed Bug Velocity\n- [+] Add Velocity Method\n- [+] Add Auto Bypass Anti Cheat & Infinite Yield"})
-
-local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 1.9 (Latest Update)", Content = "- [+] Fixed Cframe Bug\n- [+] Add 🚹 Team & Esp\n- [+] Add Choose Team\n- [+] Add Esp Toggle\n- [!!] Delete Spoofing + Hook"})
-
-local MainSection = MainTab:CreateSection("Main Script Toggle")
-local Paragraph = MainTab:CreateParagraph({Title = "📢 INFORMATION", Content = "If the script is not working, it means it needs to be updated"})
 local Toggle = MainTab:CreateToggle({
-   Name = "Auto Attack (Working)",
+   Name = "Auto Attack (Fixed)",
    CurrentValue = false,
    Flag = "Auto Attack",
    Callback = function(value)
-   if value then
-            for _, weapon in pairs(Plr.Backpack:GetChildren()) do
-                if table.find(WeaponsName, weapon.Name) then
-                    Equip(weapon)
-                end
-            end
-            for _, weapon in pairs(Plr.Character:GetChildren()) do
-                if weapon:IsA("Tool") then
-                    weapon:Activate()
-                end
-            end
-        end
+       IsAutoAttacking = value
+       
+       if value then
+           -- Memulai thread looping saat toggle ON
+           task.spawn(function()
+               while IsAutoAttacking do
+                   pcall(function()
+                       if Plr.Character and Plr.Backpack then
+                           -- 1. Equip SEMUA tool yang ada di backpack
+                           for _, tool in pairs(Plr.Backpack:GetChildren()) do
+                               if tool:IsA("Tool") then
+                                   tool.Parent = Plr.Character
+                               end
+                           end
+                           
+                           -- 2. Auto click/attack SEMUA tool yang ada di character
+                           for _, tool in pairs(Plr.Character:GetChildren()) do
+                               if tool:IsA("Tool") then
+                                   tool:Activate()
+                               end
+                           end
+                       end
+                   end)
+                   
+                   task.wait(0.1) -- Delay kecil agar tidak membuat game lag/crash
+               end
+           end)
+       end
+       -- Jika value = false, loop akan otomatis berhenti karena kondisi "while IsAutoAttacking" menjadi false
    end,
 })
 
+-- ==========================================
+-- PERBAIKAN AUTO HEAL (CONTINUOUS LOOP)
+-- ==========================================
+local FoodList = {"Drink", "Doughnut", "Hamburger", "Food", "Subway"}
+
+-- Fungsi aman untuk mengambil part makanan di workspace (mencegah error nil)
+local FoodParts = {
+    ["Drink"] = function() return workspace.Tools:FindFirstChild("Drink") and workspace.Tools.Drink:FindFirstChild("Handle") end,
+    ["Doughnut"] = function() return workspace.Tools:FindFirstChild("Doughnut") and workspace.Tools.Doughnut:FindFirstChild("Torus") end,
+    ["Hamburger"] = function() return workspace.Tools:FindFirstChild("Hamburger") and workspace.Tools.Hamburger:FindFirstChild("handle") end,
+    ["Food"] = function() return workspace.Tools:FindFirstChild("Food") and workspace.Tools.Food:FindFirstChild("Main") end,
+    ["Subway"] = function() 
+        local sub = workspace.Tools:FindFirstChild("Subway")
+        return sub and sub:FindFirstChild("Model") and sub.Model:FindFirstChild("BreadTop") 
+    end,
+}
+
+local IsAutoHealing = false
+
 local Toggle = MainTab:CreateToggle({
-   Name = "Auto Heal",
+   Name = "Auto Heal (Fixed)",
    CurrentValue = false,
    Flag = "Auto heal",
    Callback = function(value)
-   if value then
-            if Plr.Character:FindFirstChildOfClass("Humanoid").Health <= 90 then
-                if Plr.Character:FindFirstChild("Hamburger") and not Plr.Backpack:FindFirstChild("Hamburger") then
-                    ReplicatedStorage:FindFirstChild("EatingEvent"):FireServer(Plr.Character, Plr.Character:FindFirstChild("Hamburger"), "Heal")
-                    Plr.Character:FindFirstChild("Hamburger").Parent = Plr.Backpack
-                elseif not Plr.Character:FindFirstChild("Hamburger") and Plr.Backpack:FindFirstChild("Hamburger") then
-                    Equip("Hamburger")
-                elseif not Plr.Character:FindFirstChild("Hamburger") and not Plr.Backpack:FindFirstChild("Hamburger") then
-                    FireClick(workspace.Hamburger)
-                end
-            end
-        end
+       IsAutoHealing = value
+       
+       if value then
+           task.spawn(function()
+               while IsAutoHealing do
+                   pcall(function()
+                       local char = Plr.Character
+                       local hum = char and char:FindFirstChildOfClass("Humanoid")
+                       
+                       -- Cek jika darah <= 50 dan masih hidup
+                       if hum and hum.Health <= 50 and hum.Health > 0 then
+                           for _, foodName in ipairs(FoodList) do
+                               local toolInChar = char:FindFirstChild(foodName)
+                               local toolInBackpack = Plr.Backpack:FindFirstChild(foodName)
+                               
+                               if toolInChar then
+                                   -- Jika tool ada di karakter (sedang di-equip), fire event dan kembalikan ke backpack
+                                   local eatEvent = ReplicatedStorage:FindFirstChild("EatingEvent")
+                                   if eatEvent then
+                                       eatEvent:FireServer(char, toolInChar, "Heal")
+                                   end
+                                   toolInChar.Parent = Plr.Backpack
+                                   break -- Stop loop setelah menemukan dan menggunakan makanan
+                                   
+                               elseif toolInBackpack then
+                                   -- Jika tool ada di backpack, equip ke karakter
+                                   toolInBackpack.Parent = char
+                                   break -- Stop loop, tunggu iterasi berikutnya untuk fire event
+                                   
+                               else
+                                   -- Jika tidak ada di inventory, coba klik di workspace untuk mengambil
+                                   local partFunc = FoodParts[foodName]
+                                   if partFunc then
+                                       local part = partFunc()
+                                       if part then
+                                           FireClick(part)
+                                           break -- Stop loop setelah mencoba mengambil
+                                       end
+                                   end
+                               end
+                           end
+                       end
+                   end)
+                   
+                   task.wait(0.5) -- Delay agar tidak spam dan memberi waktu animasi makan
+               end
+           end)
+       end
    end,
 })
 
@@ -294,385 +371,37 @@ local Button = Bypass:CreateButton({
 
 local MainSection = Buff:CreateSection("Information/Guide")
 local Paragraph = Buff:CreateParagraph({Title = "📢 INFORMATION", Content = "For Walkspeed and Jumppower there are several types of Anti Cheat Bypass (Just Choose One)"})
-local Paragraph = Buff:CreateParagraph({Title = "🛡️ SECURITY SYSTEM", Content = "We have detected a bug affecting Walkspeed, and it will be fixed in the next update"})
 
-local MainSection = Buff:CreateSection("Walkspeed Slider")
-local lp = game:GetService("Players").LocalPlayer
+local Paragraph = Buff:CreateParagraph({Title = "🛡️ SYSTEM INFORMATION", Content = "- For the velocity method, since a different approach is used, jumppower will not work\n- To revert your character to its original state when using the velocity method, simply rejoin the server"})
 
--- ==========================================
--- Global Status Variables
--- ==========================================
-local isWalkspeedEnabled = false
-local isJumpPowerEnabled = false
-
--- Simpan nilai slider saat ini (diupdate setiap kali slider digeser)
-local currentWalkSpeedValue = 16
-local currentJumpPowerValue = 50
-
--- Nilai default (normal)
-local DEFAULT_WALKSPEED = 16
-local DEFAULT_JUMPPOWER = 50
-
-local hooks = {
-    walkspeed = DEFAULT_WALKSPEED,
-    jumppower = DEFAULT_JUMPPOWER,
-}
-
--- ==========================================
--- Hook Metamethod Setup
--- ==========================================
-local old_index, old_newindex
-
-old_index = hookmetamethod(game, "__index", function(self, property)
-    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) and hooks[property:lower()] then
-        return hooks[property:lower()]
-    end
-    return old_index(self, property)
-end)
-
-old_newindex = hookmetamethod(game, "__newindex", function(self, property, value)
-    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) and hooks[property:lower()] then
-        return -- Blokir perubahan dari game/anti-cheat
-    end
-    return old_newindex(self, property, value)
-end)
-
-
--- ==========================================
--- Fungsi Helper untuk Apply Nilai
--- ==========================================
-local function applyWalkSpeed()
-    local char = lp.Character
-    if not char then return end
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    if not hum then return end
-    
-    if isWalkspeedEnabled then
-        -- Toggle ON: pakai nilai slider
-        hooks.walkspeed = currentWalkSpeedValue
-        hum.WalkSpeed = currentWalkSpeedValue
-    else
-        -- Toggle OFF: reset ke default
-        hooks.walkspeed = DEFAULT_WALKSPEED
-        hum.WalkSpeed = DEFAULT_WALKSPEED
-    end
-end
-
-local function applyJumpPower()
-    local char = lp.Character
-    if not char then return end
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    if not hum then return end
-    
-    if isJumpPowerEnabled then
-        hooks.jumppower = currentJumpPowerValue
-        hum.JumpPower = currentJumpPowerValue
-        hum.UseJumpPower = true
-    else
-        hooks.jumppower = DEFAULT_JUMPPOWER
-        hum.JumpPower = DEFAULT_JUMPPOWER
-        hum.UseJumpPower = true
-    end
-end
-
-
--- ==========================================
--- UI Toggles (Enable/Re-Enable)
--- ==========================================
-local Toggle = Buff:CreateToggle({
-    Name = "Turn ON/Turn OFF (Hookmetamethod)",
-    Flag = "ToggleWS",
-    CurrentValue = false,
-    Callback = function(value)
-        isWalkspeedEnabled = value
-        applyWalkSpeed()
-    end
-})
-
-
--- ==========================================
--- UI Sliders Setup
--- ==========================================
-
--- Slider WalkSpeed
-local SliderWS = Buff:CreateSlider({
-   Name = "WalkSpeed (hookmetamethod)",
-   Range = {1, 100},
-   Increment = 1,
-   Suffix = "Speed",
-   CurrentValue = 16,
-   Flag = "sliderws",
-   Callback = function(Value)
-        -- Simpan nilai slider ke variabel global
-        currentWalkSpeedValue = Value
-        
-        -- Hanya apply kalau toggle aktif
-        if isWalkspeedEnabled then
-            applyWalkSpeed()
-        end
-   end,
-})
-
-
--- ==========================================
--- Auto Re-apply saat Respawn
--- ==========================================
-local function onCharacterAdded(char)
-    char:WaitForChild("Humanoid")
-    task.wait(0.2)
-    
-    -- Re-apply status toggle + nilai slider saat respawn
-    applyWalkSpeed()
-    applyJumpPower()
-end
-
-if lp.Character then
-    onCharacterAdded(lp.Character)
-end
-lp.CharacterAdded:Connect(onCharacterAdded)
-
--- Random Method
-local lp = game:GetService("Players").LocalPlayer
-local RunService = game:GetService("RunService")
-
--- ==========================================
--- Global Status Variables
--- ==========================================
-local isWalkspeedEnabled = false
-local isJumpPowerEnabled = false
-
-local currentWalkSpeedValue = 16
-local currentJumpPowerValue = 50
-
-local DEFAULT_WALKSPEED = 16
-local DEFAULT_JUMPPOWER = 50
-
--- ==========================================
--- Konfigurasi Randomization
--- ==========================================
-local CONFIG = {
-    variationPercent = 0.10,     -- ±10% variasi dari base speed
-    minInterval = 0.3,           -- Interval minimum update (detik)
-    maxInterval = 0.8,           -- Interval maximum update (detik)
-    useRandomization = true,     -- Toggle randomization on/off
-}
-
-local hooks = {
-    walkspeed = DEFAULT_WALKSPEED,
-    jumppower = DEFAULT_JUMPPOWER,
-}
-
--- ==========================================
--- Hook Metamethod Setup
--- ==========================================
-local old_index, old_newindex
-
-old_index = hookmetamethod(game, "__index", function(self, property)
-    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) and hooks[property:lower()] then
-        return hooks[property:lower()]
-    end
-    return old_index(self, property)
-end)
-
-old_newindex = hookmetamethod(game, "__newindex", function(self, property, value)
-    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) and hooks[property:lower()] then
-        return
-    end
-    return old_newindex(self, property, value)
-end)
-
-
--- ==========================================
--- Randomization System
--- ==========================================
-local lastApplyTime = 0
-local nextInterval = math.random(CONFIG.minInterval * 10, CONFIG.maxInterval * 10) / 10
-
-local function getRandomizedSpeed()
-    if not CONFIG.useRandomization then
-        return currentWalkSpeedValue
-    end
-    
-    -- Hitung variasi ±10% dari base speed
-    local variation = currentWalkSpeedValue * CONFIG.variationPercent
-    local minSpeed = currentWalkSpeedValue - variation
-    local maxSpeed = currentWalkSpeedValue + variation
-    
-    -- Random speed dalam range (dengan 1 decimal agar tidak terlalu aneh)
-    local randomSpeed = math.random(minSpeed * 10, maxSpeed * 10) / 10
-    
-    return randomSpeed
-end
-
-
--- ==========================================
--- Fungsi Helper untuk Apply Nilai
--- ==========================================
-local function applyWalkSpeed()
-    local char = lp.Character
-    if not char then return end
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    if not hum then return end
-    
-    if isWalkspeedEnabled then
-        -- Toggle ON: apply randomization kalau speed di atas normal
-        if currentWalkSpeedValue > DEFAULT_WALKSPEED then
-            local finalSpeed = getRandomizedSpeed()
-            hum.WalkSpeed = finalSpeed
-            hooks.walkspeed = finalSpeed
-        else
-            hum.WalkSpeed = DEFAULT_WALKSPEED
-            hooks.walkspeed = DEFAULT_WALKSPEED
-        end
-    else
-        -- Toggle OFF: reset ke default
-        hum.WalkSpeed = DEFAULT_WALKSPEED
-        hooks.walkspeed = DEFAULT_WALKSPEED
-    end
-end
-
-local function applyJumpPower()
-    local char = lp.Character
-    if not char then return end
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    if not hum then return end
-    
-    if isJumpPowerEnabled then
-        hum.JumpPower = currentJumpPowerValue
-        hum.UseJumpPower = true
-        hooks.jumppower = currentJumpPowerValue
-    else
-        hum.JumpPower = DEFAULT_JUMPPOWER
-        hum.UseJumpPower = true
-        hooks.jumppower = DEFAULT_JUMPPOWER
-    end
-end
-
-
--- ==========================================
--- Randomization Loop
--- ==========================================
-RunService.Heartbeat:Connect(function()
-    -- Hanya jalan kalau toggle ON dan speed di atas normal
-    if not isWalkspeedEnabled or currentWalkSpeedValue <= DEFAULT_WALKSPEED then
-        return
-    end
-    
-    local now = tick()
-    if now - lastApplyTime >= nextInterval then
-        applyWalkSpeed()
-        lastApplyTime = now
-        -- Interval berikutnya juga di-randomize (anti pattern!)
-        nextInterval = math.random(CONFIG.minInterval * 10, CONFIG.maxInterval * 10) / 10
-    end
-end)
-
-
--- ==========================================
--- UI Toggles (Enable/Re-Enable)
--- ==========================================
-local Toggle = Buff:CreateToggle({
-    Name = "Turn ON/Turn OFF (Randomization)",
-    Flag = "ToggleWS_Rand",
-    CurrentValue = false,
-    Callback = function(value)
-        isWalkspeedEnabled = value
-        applyWalkSpeed()
-    end
-})
-
-
--- ==========================================
--- UI Sliders Setup
--- ==========================================
-
--- Slider WalkSpeed (dengan Randomization)
-local SliderWS = Buff:CreateSlider({
-   Name = "WalkSpeed (Randomization)",
-   Range = {1, 100},
-   Increment = 1,
-   Suffix = "Speed",
-   CurrentValue = 16,
-   Flag = "sliderws_rand",
-   Callback = function(Value)
-        -- Simpan nilai slider ke variabel global
-        currentWalkSpeedValue = Value
-        
-        -- Hanya apply kalau toggle aktif
-        if isWalkspeedEnabled then
-            applyWalkSpeed()
-        end
-   end,
-})
-
--- ==========================================
--- Auto Re-apply saat Respawn
--- ==========================================
-local function onCharacterAdded(char)
-    char:WaitForChild("Humanoid")
-    task.wait(0.2)
-    
-    -- Re-apply status toggle + nilai slider saat respawn
-    applyWalkSpeed()
-    applyJumpPower()
-end
-
-if lp.Character then
-    onCharacterAdded(lp.Character)
-end
-lp.CharacterAdded:Connect(onCharacterAdded)
-
+local MainSection = Buff:CreateSection("Walkspeed & JumpPower")
 local Button = Buff:CreateButton({
-    Name = "Walkspeed (Cframe Method)",
+    Name = "WalkS & JumpP (Cframe Method)",
     Callback = function()
     loadstring(game:HttpGet("https://pastebin.com/raw/pGfHN8m3"))()
    end
 })
 
-local lp = game:GetService("Players").LocalPlayer
-local RunService = game:GetService("RunService")
-
--- ==========================================
--- Global Status Variables
--- ==========================================
-local isWalkspeedEnabled = false
-local currentWalkSpeedValue = 16
-local DEFAULT_WALKSPEED = 16
-local DEFAULT_JUMPPOWER = 50
-
-local hooks = {
-    walkspeed = DEFAULT_WALKSPEED,
-    jumppower = DEFAULT_JUMPPOWER,
-}
-
--- ==========================================
--- Hook Metamethod Setup (Lapisan Proteksi Tambahan)
--- ==========================================
-local old_index, old_newindex
-
-old_index = hookmetamethod(game, "__index", function(self, property)
-    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) and hooks[property:lower()] then
-        return hooks[property:lower()]
-    end
-    return old_index(self, property)
-end)
-
-old_newindex = hookmetamethod(game, "__newindex", function(self, property, value)
-    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) and hooks[property:lower()] then
-        return
-    end
-    return old_newindex(self, property, value)
-end)
-
 local Button = Buff:CreateButton({
-    Name = "Walkspeed (VelocityLinier)",
+    Name = "WalkS & JumpP (VelocityLinier)",
     Callback = function()
     loadstring(game:HttpGet("https://pastebin.com/raw/uAMdM8Xz"))()
    end
 })
 
-local MainSection = Buff:CreateSection("Jumppower Slider")
-local Paragraph = Buff:CreateParagraph({Title = "📢 INFORMATION", Content = "- Coming Soon\n- Fun Fact: The creator of this script was just one person who was bored."})
+local Button = Buff:CreateButton({
+    Name = "WalkS & JumpP (HookMetaMethod)",
+    Callback = function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/cvZjEtFh"))()
+   end
+})
+
+local Button = Buff:CreateButton({
+    Name = "WalkS & JumpP (Randomization)",
+    Callback = function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/rVk9DjEv"))()
+   end
+})
 
 local MainSection = Team:CreateSection("Choose Team")
 local Paragraph = Team:CreateParagraph({Title = "📢 INFORMATION", Content = "More Esp is Coming Soon"})
@@ -1674,3 +1403,382 @@ local Toggle = Team:CreateToggle({
        toggleFoodESP(Value)
    end,
 })
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local lp = Players.LocalPlayer
+
+-- ==========================================
+-- Daftar Item "Other", Warna & Icon
+-- ==========================================
+local otherInfo = {
+    ["KeyCard"]             = { color = Color3.fromRGB(255, 215, 0),   icon = "🔑" },
+    ["BallNChainTool"]      = { color = Color3.fromRGB(80, 80, 80),    icon = "⛓️" },
+    ["Broom"]               = { color = Color3.fromRGB(160, 82, 45),   icon = "🧹" },
+    ["BlindFold"]           = { color = Color3.fromRGB(50, 50, 50),    icon = "🙈" },
+    ["Rope"]                = { color = Color3.fromRGB(210, 180, 140), icon = "🧶" },
+    ["Handcuffs (fugitive)"]= { color = Color3.fromRGB(192, 192, 192), icon = "⛓️" },
+    ["Flashlight"]          = { color = Color3.fromRGB(255, 255, 150), icon = "🔦" },
+    ["Board"]               = { color = Color3.fromRGB(139, 90, 43),   icon = "🖼️" },
+}
+
+-- ==========================================
+-- Variabel ESP
+-- ==========================================
+local espEnabled = false
+local otherESP = {}
+local updateConnection = nil
+local listenerConnected = false
+
+-- ==========================================
+-- Fungsi: Cek apakah item adalah "Other" yang terdaftar
+-- ==========================================
+local function isRegisteredOther(item)
+    if not item then return false end
+    local name = item.Name
+    return otherInfo[name] ~= nil
+end
+
+-- ==========================================
+-- Fungsi: Cari Anchor Part khusus "Other"
+-- ==========================================
+local function findOtherAnchor(item)
+    -- 1. Cek apakah item itu Tool/Model
+    if item:IsA("Tool") or item:IsA("Model") then
+        -- Prioritas 1: Handle (case-insensitive)
+        for _, child in ipairs(item:GetChildren()) do
+            if child:IsA("BasePart") and string.lower(child.Name) == "handle" then
+                return child
+            end
+        end
+        
+        -- Prioritas 2: BallNChain (untuk BallNChainTool)
+        local ballNChain = item:FindFirstChild("BallNChain")
+        if ballNChain and ballNChain:IsA("BasePart") then
+            return ballNChain
+        end
+        
+        -- Prioritas 3: "e" (untuk Broom)
+        local ePart = item:FindFirstChild("e")
+        if ePart and ePart:IsA("BasePart") then
+            return ePart
+        end
+        
+        -- Prioritas 4: Board (untuk Board)
+        local boardPart = item:FindFirstChild("Board")
+        if boardPart and boardPart:IsA("BasePart") then
+            return boardPart
+        end
+        
+        -- Prioritas 5: PrimaryPart
+        if item:IsA("Model") and item.PrimaryPart then
+            return item.PrimaryPart
+        end
+        
+        -- Fallback: BasePart pertama
+        for _, child in ipairs(item:GetDescendants()) do
+            if child:IsA("BasePart") then
+                return child
+            end
+        end
+    end
+    
+    -- 2. BasePart langsung
+    if item:IsA("BasePart") then
+        return item
+    end
+    
+    return nil
+end
+
+-- ==========================================
+-- Fungsi: Buat ESP untuk satu Item "Other"
+-- ==========================================
+local function createOtherESP(item)
+    if not item then return end
+    if otherESP[item] then return end
+    
+    -- FILTER: Hanya item terdaftar
+    if not isRegisteredOther(item) then return end
+    
+    local anchor = findOtherAnchor(item)
+    if not anchor then
+        warn("[ESP] '" .. item.Name .. "' Does not have an anchor part")
+        return
+    end
+    
+    local itemName = item.Name
+    local info = otherInfo[itemName]
+    
+    -- Billboard
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "OtherESP_GUI"
+    billboard.Adornee = anchor
+    billboard.Size = UDim2.new(0, 120, 0, 30)
+    billboard.StudsOffset = Vector3.new(0, 2.5, 0)
+    billboard.AlwaysOnTop = true
+    billboard.ResetOnSpawn = false
+    billboard.LightInfluence = 0
+    billboard.Parent = anchor
+    
+    -- Nama Item
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Name = "NameLabel"
+    nameLabel.Size = UDim2.new(1, 0, 0, 15)
+    nameLabel.Position = UDim2.new(0, 0, 0, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = info.icon .. " " .. itemName
+    nameLabel.TextColor3 = info.color
+    nameLabel.TextStrokeTransparency = 0
+    nameLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextSize = 12
+    nameLabel.Parent = billboard
+    
+    -- Jarak
+    local distLabel = Instance.new("TextLabel")
+    distLabel.Name = "DistLabel"
+    distLabel.Size = UDim2.new(1, 0, 0, 13)
+    distLabel.Position = UDim2.new(0, 0, 0, 15)
+    distLabel.BackgroundTransparency = 1
+    distLabel.Text = "[0m]"
+    distLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    distLabel.TextStrokeTransparency = 0
+    distLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    distLabel.Font = Enum.Font.GothamBold
+    distLabel.TextSize = 11
+    distLabel.Parent = billboard
+    
+    otherESP[item] = {
+        billboard = billboard,
+        distLabel = distLabel,
+        anchor = anchor
+    }
+    
+    print("[ESP] Other Detection: " .. itemName)
+end
+
+-- ==========================================
+-- Remove ESP from one item
+-- ==========================================
+local function removeOtherESP(item)
+    if otherESP[item] then
+        pcall(function()
+            if otherESP[item].billboard then
+                otherESP[item].billboard:Destroy()
+            end
+        end)
+        otherESP[item] = nil
+    end
+end
+
+-- ==========================================
+-- Remove All ESP
+-- ==========================================
+local function clearAllOtherESP()
+    for item, _ in pairs(otherESP) do
+        removeOtherESP(item)
+    end
+end
+
+-- ==========================================
+-- Scan All item "Other" di folder Tools
+-- ==========================================
+local function scanAllOther()
+    local toolsFolder = Workspace:FindFirstChild("Tools")
+    if not toolsFolder then return 0 end
+    
+    local count = 0
+    for _, item in ipairs(toolsFolder:GetChildren()) do
+        if isRegisteredOther(item) then
+            createOtherESP(item)
+            if otherESP[item] then count = count + 1 end
+        end
+    end
+    
+    print("[OtherESP] Scan selesai. Total item 'Other' terdeteksi: " .. count)
+    return count
+end
+
+-- ==========================================
+-- Loop Update Meter
+-- ==========================================
+local function startUpdateLoop()
+    if updateConnection then updateConnection:Disconnect() end
+    
+    updateConnection = RunService.RenderStepped:Connect(function()
+        local myChar = lp.Character
+        local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
+        if not myHRP then return end
+        
+        local toRemove = {}
+        
+        for item, data in pairs(otherESP) do
+            local success = pcall(function()
+                local anchor = data.anchor
+                local distLabel = data.distLabel
+                
+                if not anchor or not anchor.Parent then
+                    table.insert(toRemove, item)
+                    return
+                end
+                
+                local distance = (myHRP.Position - anchor.Position).Magnitude
+                distLabel.Text = string.format("[%dm]", math.floor(distance))
+                
+                -- Warna jarak
+                if distance < 10 then
+                    distLabel.TextColor3 = Color3.fromRGB(255, 50, 50)   -- Merah (dekat)
+                elseif distance < 30 then
+                    distLabel.TextColor3 = Color3.fromRGB(255, 200, 0)   -- Kuning
+                else
+                    distLabel.TextColor3 = Color3.fromRGB(0, 255, 0)     -- Hijau (jauh)
+                end
+            end)
+            
+            if not success then
+                table.insert(toRemove, item)
+            end
+        end
+        
+        for _, item in ipairs(toRemove) do
+            removeOtherESP(item)
+        end
+    end)
+end
+
+-- ==========================================
+-- Deteksi Item Baru / Item Hilang
+-- ==========================================
+local function setupOtherFolderListener()
+    if listenerConnected then return end
+    
+    local toolsFolder = Workspace:FindFirstChild("Tools")
+    if not toolsFolder then return end
+    
+    -- Item baru muncul
+    toolsFolder.ChildAdded:Connect(function(child)
+        if not espEnabled then return end
+        if isRegisteredOther(child) then
+            task.wait(0.2)
+            createOtherESP(child)
+        end
+    end)
+    
+    -- Item hilang (diambil player)
+    toolsFolder.ChildRemoved:Connect(function(child)
+        if otherESP[child] then
+            removeOtherESP(child)
+        end
+    end)
+    
+    listenerConnected = true
+end
+
+-- ==========================================
+-- Toggle Other ESP ON/OFF
+-- ==========================================
+local function toggleOtherESP(state)
+    espEnabled = state
+    
+    if state then
+        local toolsFolder = Workspace:FindFirstChild("Tools")
+        if not toolsFolder then
+            toolsFolder = Workspace:WaitForChild("Tools", 15)
+        end
+        
+        if toolsFolder then
+            scanAllOther()
+            setupOtherFolderListener()
+            startUpdateLoop()
+        end
+    else
+        if updateConnection then
+            updateConnection:Disconnect()
+            updateConnection = nil
+        end
+        clearAllOtherESP()
+    end
+end
+
+-- ==========================================
+-- UI Toggle (ESP Other)
+-- ==========================================
+local Toggle = Team:CreateToggle({
+   Name = "ESP Other",
+   CurrentValue = false,
+   Flag = "ESPOtherToggle",
+   Callback = function(Value)
+       toggleOtherESP(Value)
+   end,
+})
+
+
+local MainSection = Other:CreateSection("Script Tool")
+local Paragraph = Other:CreateParagraph({Title = "📢 INFORMATION", Content = "All these scripts support this game"})
+local Button = Other:CreateButton({
+    Name = "Infinite Yield",
+    Callback = function()
+    loadstring(game:HttpGet(('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'),true))()
+   end
+})
+
+local Button = Other:CreateButton({
+    Name = "Multi Tools",
+    Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/zephyr10101/MultiToolsV1/main/script"))()
+   end
+})
+
+local Button = Other:CreateButton({
+    Name = "God Mode",
+    Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/zephyr10101/ignore-touchinterests/main/main",true))()
+   end
+})
+
+local Button = Other:CreateButton({
+    Name = "Invisible",
+    Callback = function()
+    loadstring(game:HttpGet('https://pastebin.com/raw/3Rnd9rHf'))()
+   end
+})
+
+local MainSection = Other:CreateSection("More Script Tool")
+local Button = Other:CreateButton({
+    Name = "Noclip Tool",
+    Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/IOERHUB/Noclip/refs/heads/main/Testing"))()
+   end
+})
+
+local Button = Other:CreateButton({
+    Name = "Tool Giver (Client)",
+    Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/yofriendfromschool1/Sky-Hub-Backup/main/gametoolgiver.lua"))()
+   end
+})
+
+local Button = Other:CreateButton({
+    Name = "Instant Click E",
+    Callback = function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/5qXz6a5L"))()
+   end
+})
+
+local Button = Other:CreateButton({
+    Name = "Super Ring V6",
+    Callback = function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/hhyT3gQr"))()
+   end
+})
+
+local MainSection = Misc:CreateSection("Creator This script")
+local Paragraph = Misc:CreateParagraph({Title = "⚒️ USERNAME/NAME", Content = "- 3streakzx: Programmer\n- 4Streakzx: Builder\n- kamunanya3vx: Search Information\n- Therepositori: Tester Scripts\n- Zeutronxsite: Idea/Concept"})
+
+local Paragraph = Misc:CreateParagraph({Title = "🔍 LINK SCRIPTS & SUPPORT", Content = "- Pastebin.com/u/Ty4rds\n- https://github.com/ioerhub"})
+
+local Paragraph = Misc:CreateParagraph({Title = "🛡️ INFORMATION", Content = "- Latest Version: 2.3\n- Max Version: 4.0\n- Status: 🟡 Progress"})
+
+local Paragraph = Misc:CreateParagraph({Title = "🌐 GROUP & TEAM", Content = "- @Zeutron Community\n- @Zyptrue Dev Community\n- @IOER State Community"})
