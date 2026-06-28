@@ -346,14 +346,14 @@ local Paragraph = Bypass:CreateParagraph({Title = "⚠️ WARNING", Content = "i
 local Button = Bypass:CreateButton({
     Name = "Anti Fling",
     Callback = function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/c00lhaxOFFICAL/GrayScriptsAntiCheatRemoverV2LITE/refs/heads/main/GrayGrayGray"))()
+    loadstring(game:HttpGet("https://pastebin.com/raw/MhJDcWjR"))()
    end
 })
 
 local Button = Bypass:CreateButton({
     Name = "Anti TP/Walkspeed",
     Callback = function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/c00lhaxOFFICAL/GrayScriptsAntiCheatRemoverV2LITE/refs/heads/main/GrayGrayGray"))()
+    loadstring(game:HttpGet("https://pastebin.com/raw/VttTZyrT"))()
    end
 })
 
